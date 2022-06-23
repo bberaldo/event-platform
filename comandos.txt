@@ -1,0 +1,7 @@
+// npm i 
+// npm run deV
+
+será utilizado como Headless CMS o GraphCMS juntamente com react que vai se comunicar com o CMS
+
+nao vai usar o axios para chamar a api pois os códigos sao "estranhos" para api graphQL, por isso foi utilizado o apollo
+    npm i @apollo/client graphql
