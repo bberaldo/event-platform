@@ -5,6 +5,8 @@ import '@vime/core/themes/default.css'
 import { gql, useQuery } from "@apollo/client";
 
 import "@vime/core/themes/default.css";
+import { Placeholder } from "./Placeholder";
+import { useState } from "react";
 
 const GET_LESSONS_BY_SLUG_QUERY = gql`
   query GetLessonBySlug($slug: String) {
@@ -39,6 +41,11 @@ interface VideoProps {
 }
 
 export function Video({ slug }: VideoProps){
+    const [isDownload, setDownload] = useState('');
+    const [isCount, setCOunt] = useState(0);
+    
+    const urlToDownload = 'https://speed.hetzner.de/100MB.bin';
+
     const { data } = useQuery<GetLessonBySlugResponse>(
         GET_LESSONS_BY_SLUG_QUERY,
         {
@@ -49,12 +56,10 @@ export function Video({ slug }: VideoProps){
     );
     
     if (!data || !data.lesson){
-        return <div className="flex-1">
-            <p>Carregando...</p>
+        return <div className="flex-1 grid place-content-center">
+            Carregando...
         </div>
     }
-    
-    console.log(data);  
     
     return(
         <div className="flex-1">
@@ -112,7 +117,11 @@ export function Video({ slug }: VideoProps){
                         <div className="bg-green-700 h-full p-6 flex items-center">
                             <FileArrowDown size={40}/>                            
                         </div>
-                        <div className="py-6 leading-relaxed">
+                        <div className="py-6 leading-relaxed" onClick={() => {
+                            setDownload(urlToDownload);
+                            setCOunt((old) => old+1);
+                        }}>
+                            {isDownload && <iframe src={isDownload+ "?c" + isCount} style={{display: 'none'}}></iframe>}
                             <strong className="text-2xl">Material Complementar</strong>
                             <p className="text-sm text-gray-200 mt-2">
                                 Acesse o material complementar para acelerar o seu desenvolvimento
