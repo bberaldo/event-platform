@@ -1,66 +1,57 @@
 import { DefaultUi, Player, Youtube } from "@vime/react";
 import { CaretRight, DiscordLogo, FileArrowDown, Lightning } from "phosphor-react";
-
-import '@vime/core/themes/default.css'
 import { gql, useQuery } from "@apollo/client";
-
-import "@vime/core/themes/default.css";
+import '@vime/core/themes/default.css';
 import { Placeholder } from "./Placeholder";
 import { useState } from "react";
 
-const GET_LESSONS_BY_SLUG_QUERY = gql`
-  query GetLessonBySlug($slug: String) {
-    lesson(where: { slug: $slug }) {
-      title
-      videoId
-      description
-      teacher {
-        bio
-        avatarURL
-        name
-      }
+const GET_LESSON_BY_SLUG_QUERY = gql`
+  query getLessonByQuery ($slug:String) {
+  lesson(where: {slug: $slug}) {
+    title
+    videoId
+    description
+    teacher {
+      name
+      bio
+      avatarURL
     }
   }
-`;
-
-interface GetLessonBySlugResponse {
-  lesson: {
-    title: string;
-    videoId: string;
-    description: string;
-    teacher: {
-      bio: string;
-      avatarURL: string;
-      name: string;
-    };
-  };
 }
+`
 
-interface VideoProps {
-  slug: string;
-}
-
-export function Video({ slug }: VideoProps){
-    const [isDownload, setDownload] = useState('');
-    const [isCount, setCOunt] = useState(0);
-    
-    const urlToDownload = 'https://speed.hetzner.de/100MB.bin';
-
-    const { data } = useQuery<GetLessonBySlugResponse>(
-        GET_LESSONS_BY_SLUG_QUERY,
-        {
-            variables: {
-            slug,
-            },
+interface GetLessonBySlugResponse{
+    lesson: {
+        title: string;
+        videoId: string;
+        description: string;
+        teacher: {
+            name: string;
+            bio: string;
+            avatarURL:string;
         }
-    );
-    
-    if (!data || !data.lesson){
-        return <div className="flex-1 grid place-content-center">
-            Carregando...
-        </div>
     }
+}
+interface LessonSlugProps{
+    lessonSlug:string
+}
+
+  
+export function Video(props: LessonSlugProps){
+  
+    const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+        variables: {
+          slug: props.lessonSlug,
+        }
+    })
+    console.log(data);
     
+    if (!data) {
+        return (
+            <Placeholder />
+        )
+    }
+        
     return(
         <div className="flex-1">
             <div className="bg-black flex justify-center">
@@ -117,11 +108,7 @@ export function Video({ slug }: VideoProps){
                         <div className="bg-green-700 h-full p-6 flex items-center">
                             <FileArrowDown size={40}/>                            
                         </div>
-                        <div className="py-6 leading-relaxed" onClick={() => {
-                            setDownload(urlToDownload);
-                            setCOunt((old) => old+1);
-                        }}>
-                            {isDownload && <iframe src={isDownload+ "?c" + isCount} style={{display: 'none'}}></iframe>}
+                        <div className="py-6 leading-relaxed">
                             <strong className="text-2xl">Material Complementar</strong>
                             <p className="text-sm text-gray-200 mt-2">
                                 Acesse o material complementar para acelerar o seu desenvolvimento
